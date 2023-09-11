@@ -5,9 +5,10 @@ import {
   isEmailValid,
   isValidPhone,
 } from "../utils/validations";
-import { isValidCity } from "../utils/all-cities";
+import { isCityValid } from "../utils/all-cities";
 import { PhoneInputState, UserInformation } from "../types";
-import { ClassPhoneInput } from "../Phone/ClassPhoneInput";
+import { ClassPhoneInput } from "./ClassPhoneInput";
+import { ClassTextInput } from "./ClassTextInput";
 
 const firstNameErrorMessage = "First name must be at least 2 characters long";
 const lastNameErrorMessage = "Last name must be at least 2 characters long";
@@ -53,6 +54,13 @@ export class ClassForm extends Component<ClassFormProps, ClassFormState> {
     this.setState({ phone: phoneInput });
   };
 
+  handleTextChange = (
+    field: "firstName" | "lastName" | "email" | "city",
+    value: string
+  ) => {
+    this.setState({ ...this.state, [field]: value });
+  };
+
   submitFormHandler(e: SyntheticEvent) {
     e.preventDefault();
     const { phone, ...userInfo } = this.state;
@@ -63,7 +71,7 @@ export class ClassForm extends Component<ClassFormProps, ClassFormState> {
       containsNumber(lastName) ||
       lastName.length < 2 ||
       !isEmailValid(email) ||
-      !isValidCity(city) ||
+      !isCityValid(city) ||
       !isValidPhone(phone);
     if (display) {
       alert("Bad input");
@@ -97,18 +105,12 @@ export class ClassForm extends Component<ClassFormProps, ClassFormState> {
         </u>
 
         {/* first name input */}
-        <div className="input-wrap">
-          <label htmlFor="first-name">{"First Name"}:</label>
-          <input
-            id="first-name"
-            ref={this.fnRef}
-            value={firstName}
-            placeholder="Bilbo"
-            onChange={() =>
-              this.setState({ firstName: this.fnRef.current?.value || "" })
-            }
-          />
-        </div>
+        <ClassTextInput
+          onChangeText={(value) => this.handleTextChange("firstName", value)}
+          infoType="firstName"
+          input={firstName}
+          placeholder="Bilbo"
+        ></ClassTextInput>
         <ErrorMessage
           message={
             isFNContainsNumber
@@ -119,18 +121,12 @@ export class ClassForm extends Component<ClassFormProps, ClassFormState> {
         />
 
         {/* last name input */}
-        <div className="input-wrap">
-          <label htmlFor="last-name">{"Last Name"}:</label>
-          <input
-            id="last-name"
-            ref={this.lnRef}
-            value={lastName}
-            placeholder="Baggins"
-            onChange={() =>
-              this.setState({ lastName: this.lnRef.current?.value || "" })
-            }
-          />
-        </div>
+        <ClassTextInput
+          onChangeText={(value) => this.handleTextChange("lastName", value)}
+          infoType="lastName"
+          input={lastName}
+          placeholder="Baggins"
+        ></ClassTextInput>
         <ErrorMessage
           message={
             isLNContainsNumber
@@ -141,40 +137,27 @@ export class ClassForm extends Component<ClassFormProps, ClassFormState> {
         />
 
         {/* Email Input */}
-        <div className="input-wrap">
-          <label htmlFor="email">{"Email"}:</label>
-          <input
-            id="email"
-            ref={this.emailRef}
-            value={email}
-            placeholder="bilbo-baggins@adventurehobbits.net"
-            onChange={() =>
-              this.setState({ email: this.emailRef.current?.value || "" })
-            }
-          />
-        </div>
+        <ClassTextInput
+          onChangeText={(value) => this.handleTextChange("email", value)}
+          infoType="email"
+          input={email}
+          placeholder="bilbo-baggins@adventurehobbits.net"
+        ></ClassTextInput>
         <ErrorMessage
           message={emailErrorMessage}
           show={display && !isEmailValid(email)}
         />
 
         {/* City Input */}
-        <div className="input-wrap">
-          <label htmlFor="city">{"City"}:</label>
-          <input
-            id="city"
-            ref={this.cityRef}
-            value={city}
-            placeholder="Hobbiton"
-            list="cities"
-            onChange={() =>
-              this.setState({ city: this.cityRef.current?.value || "" })
-            }
-          />
-        </div>
+        <ClassTextInput
+          onChangeText={(value) => this.handleTextChange("city", value)}
+          infoType="city"
+          input={city}
+          placeholder="Hobbiton"
+        ></ClassTextInput>
         <ErrorMessage
           message={cityErrorMessage}
-          show={display && !isValidCity(city)}
+          show={display && !isCityValid(city)}
         />
 
         <ClassPhoneInput

@@ -4,9 +4,9 @@ export const capitalize = (s:string) => {
     // todo: build this function
     // `capitalize("jOn")` should output `"Jon"`
     if(s.length==0){
-      return s;
+      return "";
     }
-    return s[0].toUpperCase+s.slice(0).toLowerCase();
+    return s[0].toUpperCase()+s.slice(0).toLowerCase();
 }
 
 export const formatPhoneNumber = (digits:string):string => {

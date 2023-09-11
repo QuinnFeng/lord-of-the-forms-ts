@@ -116,7 +116,7 @@ export const allCities = [
   "Woodhall",
 ];
 
-export function isValidCity(target:string) {
+export function isCityValid(target:string) {
   let left = 0;
   let right = allCities.length - 1;
   target=target.toLowerCase();

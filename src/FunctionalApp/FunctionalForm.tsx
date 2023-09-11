@@ -1,13 +1,14 @@
-import { SyntheticEvent, useRef, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { ErrorMessage } from "../ErrorMessage";
-import FunctionalPhoneInput from "../Phone/FunctionalPhoneInput";
+import FunctionalPhoneInput from "./FunctionalPhoneInput";
 import { PhoneInputState, UserInformation } from "../types";
 import {
   containsNumber,
   isEmailValid,
   isValidPhone,
 } from "../utils/validations";
-import { isValidCity } from "../utils/all-cities";
+import { isCityValid } from "../utils/all-cities";
+import FunctionalTextInput from "./FunctionalTextInput";
 
 const firstNameErrorMessage = "First name must be at least 2 characters long";
 const lastNameErrorMessage = "Last name must be at least 2 characters long";
@@ -28,11 +29,6 @@ export function FunctionalForm(props: FunctionalFormProps) {
   const [phone, setPhone] = useState<PhoneInputState>(["", "", "", ""]);
   const [display, setDisplay] = useState<boolean>(false);
 
-  const fnRef = useRef<HTMLInputElement>(null);
-  const lnRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  const cityRef = useRef<HTMLInputElement>(null);
-
   const submitFormHandler = (e: SyntheticEvent) => {
     e.preventDefault();
     const isNotValid =
@@ -40,7 +36,7 @@ export function FunctionalForm(props: FunctionalFormProps) {
       containsNumber(lastName) ||
       lastName.length < 2 ||
       !isEmailValid(email) ||
-      !isValidCity(city) ||
+      !isCityValid(city) ||
       !isValidPhone(phone);
     if (isNotValid) {
       alert("Bad input");
@@ -75,6 +71,19 @@ export function FunctionalForm(props: FunctionalFormProps) {
   const isLNContainsNumber = containsNumber(lastName);
   const isFNLongEnough = firstName.length >= 2;
   const isLNLongEnough = lastName.length >= 2;
+  const infoSetter = {
+    firstName: setFirstName,
+    lastName: setLastName,
+    email: setEmail,
+    city: setCity,
+  };
+
+  const handleTextChange = (
+    field: "firstName" | "lastName" | "email" | "city",
+    value: string
+  ) => {
+    infoSetter[field](value);
+  };
 
   return (
     <form>
@@ -83,16 +92,12 @@ export function FunctionalForm(props: FunctionalFormProps) {
       </u>
 
       {/* first name input */}
-      <div className="input-wrap">
-        <label htmlFor="first-name">{"First Name"}:</label>
-        <input
-          id="first-name"
-          ref={fnRef}
-          value={firstName}
-          placeholder="Bilbo"
-          onChange={() => setFirstName(fnRef.current?.value || "")}
-        />
-      </div>
+      <FunctionalTextInput
+        onChangeText={(value) => handleTextChange("firstName", value)}
+        infoType="firstName"
+        input={firstName}
+        placeholder="Bilbo"
+      ></FunctionalTextInput>
       <ErrorMessage
         message={
           isFNContainsNumber
@@ -103,16 +108,12 @@ export function FunctionalForm(props: FunctionalFormProps) {
       />
 
       {/* last name input */}
-      <div className="input-wrap">
-        <label htmlFor="last-name">{"Last Name"}:</label>
-        <input
-          id="last-name"
-          ref={lnRef}
-          value={lastName}
-          placeholder="Baggins"
-          onChange={() => setLastName(lnRef.current?.value || "")}
-        />
-      </div>
+      <FunctionalTextInput
+        onChangeText={(value) => handleTextChange("lastName", value)}
+        infoType="lastName"
+        input={lastName}
+        placeholder="Baggins"
+      ></FunctionalTextInput>
       <ErrorMessage
         message={
           isLNContainsNumber
@@ -123,36 +124,27 @@ export function FunctionalForm(props: FunctionalFormProps) {
       />
 
       {/* Email Input */}
-      <div className="input-wrap">
-        <label htmlFor="email">{"Email"}:</label>
-        <input
-          id="email"
-          ref={emailRef}
-          value={email}
-          placeholder="bilbo-baggins@adventurehobbits.net"
-          onChange={() => setEmail(emailRef.current?.value || "")}
-        />
-      </div>
+      <FunctionalTextInput
+        onChangeText={(value) => handleTextChange("email", value)}
+        infoType="email"
+        input={email}
+        placeholder="bilbo-baggins@adventurehobbits.net"
+      ></FunctionalTextInput>
       <ErrorMessage
         message={emailErrorMessage}
         show={display && !isEmailValid(email)}
       />
 
       {/* City Input */}
-      <div className="input-wrap">
-        <label htmlFor="city">{"City"}:</label>
-        <input
-          id="city"
-          ref={cityRef}
-          list="cities"
-          value={city}
-          placeholder="Hobbiton"
-          onChange={() => setCity(cityRef.current?.value || "")}
-        />
-      </div>
+      <FunctionalTextInput
+        onChangeText={(value) => handleTextChange("city", value)}
+        infoType="city"
+        input={city}
+        placeholder="Hobbiton"
+      ></FunctionalTextInput>
       <ErrorMessage
         message={cityErrorMessage}
-        show={display && !isValidCity(city)}
+        show={display && !isCityValid(city)}
       />
 
       <FunctionalPhoneInput phoneInput={phone} setPhoneInput={setPhone} />
